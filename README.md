@@ -8,6 +8,10 @@ Open `index.html` (home) and pick a door: `play.html` is the playground
 appear only when they spot a mistake), `learn.html` is the full-screen
 course (theory + animated traces + tasks).
 
+The editor helps like a big one: autocomplete (`pr` → `print`, arrows +
+Enter), auto-closing `()` `[]` `{}` `""`, Tab to indent (Shift+Tab to
+unindent), smart Enter after `:`.
+
 ## Learner code (real Python syntax)
 ```python
 print("Hello tiny-py!")

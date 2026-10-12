@@ -59,6 +59,18 @@ kbd{
 .key-hint{margin-left:auto; letter-spacing:0; text-transform:none; font-weight:400; font-size:12px}
 .panel-head .btn{padding:3px 12px; font-size:12px}
 
+/* VS Code-like autocomplete popup */
+.complete-box{
+  position:absolute; z-index:30; min-width:170px; max-width:250px; max-height:190px;
+  overflow:auto; background:var(--code-bg); color:var(--code-fg);
+  border:1px solid #3a352c; border-radius:8px; padding:4px;
+  font-family:ui-monospace,Consolas,monospace; font-size:13px;
+  box-shadow:0 8px 24px rgba(0,0,0,.35);
+}
+.complete-box[hidden]{display:none}
+.citem{padding:4px 8px; border-radius:5px; cursor:pointer; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.citem.sel{background:var(--accent); color:#fff}
+
 /* image library */
 #images-panel{margin-top:14px}
 #img-file{display:none}
