@@ -1,0 +1,7 @@
+<!DOCTYPE html><html><body>
+<script src="../app/tinypy.js"></script>
+<script>
+const r = TinyPy.run('for i in range(3):\n    print(i * 10)\n');
+const ok = !r.error && r.output === '0\n10\n20';
+document.body.innerHTML += ok ? '<p style="color:green">tinypy OK</p>' : '<p style="color:red">tinypy FAIL: ' + JSON.stringify(r) + '</p>';
+</script></body></html>

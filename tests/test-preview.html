@@ -1,0 +1,9 @@
+<!DOCTYPE html><html><body>
+<textarea id="editor"><t-text>hi</t-text></textarea>
+<iframe id="preview"></iframe>
+<script src="../app/preview.js"></script>
+<script>
+Preview.render();
+const ok = document.getElementById('preview').srcdoc.includes('hi');
+document.body.innerHTML += ok ? '<p style="color:green">preview OK</p>' : '<p style="color:red">preview FAIL</p>';
+</script></body></html>

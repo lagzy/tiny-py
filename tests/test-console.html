@@ -1,0 +1,16 @@
+<!DOCTYPE html><html><body>
+<pre id="cout"></pre>
+<div id="cinrow" hidden><span id="cprompt"></span><input id="cin" type="text"><button id="btn-send"></button></div>
+<script src="../app/console.js"></script>
+<script>
+Csl.line('a'); Csl.line('b');
+const ok = document.getElementById('cout').textContent === 'a\nb';
+Csl.ask('Guess?');
+const ok2 = document.getElementById('cinrow').hidden === false
+  && document.getElementById('cprompt').textContent === 'Guess?';
+Csl.done();
+const ok3 = document.getElementById('cinrow').hidden === true;
+Csl.clear();
+const ok4 = document.getElementById('cout').textContent === '';
+document.body.innerHTML += (ok && ok2 && ok3 && ok4) ? '<p style="color:green">console OK</p>' : '<p style="color:red">console FAIL</p>';
+</script></body></html>

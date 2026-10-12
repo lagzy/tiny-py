@@ -1,0 +1,9 @@
+t-title{display:block;font-size:2em;font-weight:800;margin:.3em 0;font-family:Georgia,serif;color:#22201b}
+t-text{display:block;margin:.4em 0;font-family:system-ui,sans-serif}
+t-button{display:inline-block;padding:.5em 1em;background:#d9481f;color:#fff;border-radius:8px;cursor:pointer;font-family:system-ui;border:none}
+t-button:hover{background:#b93a15}
+t-box{display:block;padding:1em;border-radius:12px;background:#f1f5f9;margin:.4em 0;font-family:system-ui}
+t-img{display:block;max-width:100%}
+t-row{display:flex;gap:.5em;flex-wrap:wrap}
+t-center{display:flex;justify-content:center;text-align:center}
+#stage{position:relative;min-height:200px;border:1px dashed #cbd5e1;border-radius:8px;padding:8px}

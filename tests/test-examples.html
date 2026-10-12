@@ -1,0 +1,6 @@
+<!DOCTYPE html><html><body>
+<script src="../app/examples.js"></script>
+<script>
+const ok = window.Examples && Examples.list.length === 5 && Examples.code('clicker').includes('tiny');
+document.body.innerHTML += ok ? '<p style="color:green">examples OK (5)</p>' : '<p style="color:red">examples FAIL</p>';
+</script></body></html>

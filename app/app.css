@@ -1,0 +1,236 @@
+/* tiny-html theme — see design.md. Paper + ink + one accent. Flat color only. */
+:root{
+  --paper:#f7f3ea; --panel:#fffdf8; --ink:#22201b; --muted:#6f6a5e;
+  --line:#e3dccb; --accent:#d9481f; --accent-dk:#b93a15;
+  --moss:#4d7c0f; --amber:#fdf3d7; --amber-line:#e3bd55;
+  --code-bg:#1e1b16; --code-fg:#f3ead8;
+}
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--paper); color:var(--ink);
+  font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+  max-width:1140px; margin-inline:auto; padding:0 16px 32px;
+}
+
+/* header */
+header.top{
+  display:flex; align-items:center; gap:12px;
+  padding:14px 4px; border-bottom:1px solid var(--line);
+}
+.logo{display:inline-flex; gap:3px}
+.logo i{width:12px; height:12px; border-radius:3px; display:block}
+.logo i:nth-child(1){background:var(--accent)}
+.logo i:nth-child(2){background:var(--moss)}
+.logo i:nth-child(3){background:var(--amber-line)}
+.wordmark{font-family:Georgia,"Times New Roman",serif; font-size:22px; font-weight:700}
+.tagline{color:var(--muted); font-size:13px; flex:1}
+
+/* buttons */
+.btn{
+  font:inherit; font-size:13.5px; padding:7px 14px; border-radius:8px;
+  border:1px solid var(--line); background:transparent; color:var(--ink);
+  cursor:pointer; text-decoration:none; display:inline-block;
+}
+.btn:hover{border-color:var(--ink)}
+.btn.primary{background:var(--accent); border-color:var(--accent); color:#fff; font-weight:600}
+.btn.primary:hover{background:var(--accent-dk); border-color:var(--accent-dk)}
+.btn:focus-visible, #editor:focus-visible{
+  outline:2px solid var(--accent); outline-offset:2px;
+}
+kbd{
+  font-family:ui-monospace,Consolas,monospace; font-size:12px;
+  border:1px solid var(--line); border-bottom-width:2px; border-radius:5px;
+  padding:0 5px; background:var(--panel);
+}
+
+/* playground panels */
+#layout{display:flex; gap:14px; margin-top:16px}
+#left, #right{flex:1; min-width:0}
+.panel{
+  background:var(--panel); border:1px solid var(--line);
+  border-radius:10px; overflow:hidden;
+}
+.panel-head{
+  display:flex; align-items:center; gap:8px;
+  padding:8px 12px; border-bottom:1px solid var(--line);
+  font-size:11px; letter-spacing:.12em; color:var(--muted); font-weight:600;
+}
+.live-dot{width:8px; height:8px; border-radius:50%; background:var(--moss); animation:pulse 2s infinite}
+.key-hint{margin-left:auto; letter-spacing:0; text-transform:none; font-weight:400; font-size:12px}
+.panel-head .btn{padding:3px 12px; font-size:12px}
+
+/* image library */
+#images-panel{margin-top:14px}
+#img-file{display:none}
+.img-empty{margin:0; padding:10px 12px; font-size:13px; color:var(--muted)}
+.img-item{display:flex; gap:8px; align-items:center; padding:8px 12px; border-top:1px solid var(--line)}
+.img-item img{width:40px; height:40px; object-fit:contain; background:#fff; border:1px solid var(--line); border-radius:6px; cursor:pointer; flex:none}
+.img-item .iname{flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:13px}
+.img-item .btn{padding:3px 10px; font-size:12px; flex:none}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+
+#editor{
+  width:100%; height:58vh; border:0; resize:vertical;
+  background:var(--code-bg); color:var(--code-fg); caret-color:var(--accent);
+  font-family:ui-monospace,"Cascadia Mono",Consolas,monospace;
+  font-size:14px; line-height:1.6; padding:14px 16px;
+}
+#editor::selection{background:var(--accent); color:#fff}
+
+/* syntax highlight overlay: transparent textarea over colored <pre> */
+.editor-wrap{position:relative}
+#highlight{
+  position:absolute; inset:0; margin:0; overflow:hidden; pointer-events:none;
+  background:var(--code-bg); color:var(--code-fg); padding:14px 16px;
+  font-family:ui-monospace,"Cascadia Mono",Consolas,monospace;
+  font-size:14px; line-height:1.6; white-space:pre-wrap; word-wrap:break-word;
+}
+#editor{position:relative}
+/* transparent text ONLY after highlight.js proves it runs (see sync()) */
+.editor-wrap.hl-on #editor{background:transparent; color:transparent}
+.tok-tag{color:#e8a15c}
+.tok-kw{color:#e8a15c; font-weight:600}
+.tok-fn{color:#f2d479}
+.tok-cls{color:#7dd3c0}
+.tok-str{color:#9ece6a}
+.tok-com{color:#8a8474}
+.tok-num{color:#8ecae6}
+#preview{width:100%; height:58vh; border:0; background:#fff; display:block}
+
+#toolbar{display:flex; gap:8px; align-items:center; flex-wrap:wrap; padding:10px 12px; border-top:1px solid var(--line)}
+#toolbar .hint{margin-left:auto; color:var(--muted); font-size:12px}
+.panel-head .filerow{margin-left:auto}
+.panel-head .filerow .btn{padding:3px 12px; font-size:12px}
+.panel-head #file-list{font-size:12px; padding:4px 8px; max-width:130px}
+.filerow{display:flex; gap:8px; align-items:center; min-width:0}
+#file-list{
+  font:inherit; font-size:13.5px; padding:7px 10px; border-radius:8px;
+  border:1px solid var(--line); background:var(--panel); color:var(--ink);
+  max-width:150px;
+}
+
+/* coach strip — plain text node, JS overwrites textContent */
+#assistant{
+  margin-top:14px; padding:11px 14px 11px 16px; border-radius:8px;
+  background:var(--amber); border-left:4px solid var(--amber-line);
+  font-size:14px;
+}
+
+/* separate print() console */
+#console-panel{margin-top:14px}
+.cout-hint{color:var(--muted); letter-spacing:0; font-weight:400; text-transform:none}
+#btn-clear{margin-left:auto; padding:3px 10px; font-size:12px}
+#cinrow{display:flex; gap:8px; align-items:center; background:var(--code-bg); padding:8px 12px}
+#cinrow[hidden]{display:none}
+#cprompt{color:var(--code-fg); font-size:13px; font-family:ui-monospace,Consolas,monospace}
+#cin{flex:1; min-width:0; background:#141210; border:1px solid #3a352c; color:var(--code-fg); border-radius:6px; padding:6px 8px; font-family:ui-monospace,Consolas,monospace; font-size:13px}
+#btn-send{border-color:#3a352c; color:var(--code-fg); padding:5px 12px; font-size:13px}
+#btn-send:hover{border-color:var(--code-fg)}
+
+/* home */
+.home{max-width:760px; margin:0 auto; padding:48px 16px 64px; text-align:center}
+.home h1{font-family:Georgia,serif; font-size:52px; line-height:1.05; margin:32px 0 12px}
+.lede{color:var(--muted); font-size:17px; max-width:560px; margin:0 auto 32px}
+.lede code{background:#efe8d7; padding:1px 6px; border-radius:4px}
+.doors{display:flex; gap:14px; text-align:left}
+.door{flex:1; background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:20px; text-decoration:none; color:var(--ink); display:flex; flex-direction:column; gap:8px}
+.door:hover{border-color:var(--accent)}
+.door b{font-family:Georgia,serif; font-size:22px}
+.door span{color:var(--muted); font-size:14px; flex:1}
+.door .go{color:var(--accent-dk); font-style:normal; font-weight:600}
+.fine{color:var(--muted); font-size:13px; margin-top:28px}
+@media(max-width:640px){.doors{flex-direction:column}.home h1{font-size:38px}}
+
+/* full-screen learn */
+.lprog{height:4px; background:var(--line); border-radius:2px; margin:0 4px}
+#lprog-fill{height:100%; width:0; background:var(--accent); border-radius:2px; transition:width .4s}
+.learn-full{max-width:920px; margin:0 auto; padding:24px 16px 64px}
+.lkicker{font-size:12px; letter-spacing:.14em; color:var(--muted); font-weight:600; margin:0}
+.learn-full h1{font-family:Georgia,serif; font-size:40px; margin:.2em 0 .3em}
+.ltheory{font-size:19px; line-height:1.55; max-width:640px}
+.lstep{font-weight:700; margin:10px 0 0}
+.vtabs{display:flex; gap:8px; margin:2px 0 12px}
+.vtabs[style*="none"]{display:none}
+.vtab{font:inherit; font-size:13px; padding:5px 14px; border-radius:8px; border:1px solid var(--line); background:var(--panel); color:var(--ink); cursor:pointer}
+.vtab:hover{border-color:var(--accent)}
+.vtab.on{background:var(--ink); border-color:var(--ink); color:var(--paper)}
+.ldemo{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:20px 0}
+.ldemo .panel-head .btn{margin-left:auto; padding:3px 12px; font-size:12px}
+#lcode{background:var(--code-bg); color:var(--code-fg); padding:14px 16px; border-radius:0 0 10px 10px; font-family:ui-monospace,Consolas,monospace; font-size:14px; line-height:1.7; white-space:pre-wrap; margin:0}
+#lcode .cl{display:block; border-radius:4px; padding:0 4px; margin:0 -4px; transition:background .3s}
+#lcode .cl-hl{background:#4a3a1a}
+#lout{background:#141210; color:var(--code-fg); padding:10px 12px; border-radius:0 0 10px 10px; font-family:ui-monospace,Consolas,monospace; font-size:13px; min-height:3em; white-space:pre-wrap; margin:0}
+#lnote{color:var(--muted); font-size:14px; min-height:1.4em}
+#lministage{position:relative; height:150px; background:var(--panel); border:1px solid var(--line); border-radius:10px; overflow:hidden; cursor:pointer}
+#lministage:empty{display:none}
+.lspawn{position:absolute; width:36px; height:36px; border-radius:8px; animation:pop .4s}
+.lspawn.await{cursor:pointer; animation:awaitPulse 1s infinite}
+@keyframes awaitPulse{0%,100%{box-shadow:0 0 0 0 rgba(217,72,31,.55)}50%{box-shadow:0 0 0 10px rgba(217,72,31,0)}}
+@keyframes pop{0%{transform:scale(.3); opacity:0}100%{transform:scale(1); opacity:1}}
+.ltask{background:var(--amber); border-left:4px solid var(--amber-line); border-radius:8px; padding:14px 16px; font-size:15px; margin:18px 0}
+.ltask .btn{margin-top:10px}
+.lnav{display:flex; gap:10px; align-items:center; margin-top:8px}
+.lkeys{flex:1; text-align:center; color:var(--muted); font-size:13px}
+#lprev:disabled{opacity:.4; cursor:default}
+@media(max-width:760px){.ldemo{grid-template-columns:1fr}.learn-full h1{font-size:30px}}
+
+/* embedded playground under the tutorial */
+.ltry{font-family:Georgia,serif; font-size:24px; margin:36px 0 4px}
+.lplayground #layout{margin-top:10px}
+.lplayground #editor,.lplayground #preview{height:46vh}
+.lplayground #assistant{margin-top:14px}
+#cout{
+  margin:0; padding:10px 12px; min-height:3em; max-height:30vh; overflow:auto;
+  background:var(--code-bg); color:var(--code-fg);
+  font-family:ui-monospace,Consolas,monospace; font-size:13px; line-height:1.5;
+  white-space:pre-wrap; word-wrap:break-word;
+}
+
+/* lessons */
+
+/* course player */
+.course{padding:12px 14px}
+.cnav{display:flex; gap:8px; align-items:center; margin-bottom:8px}
+.ctitle{flex:1; text-align:center; font-family:Georgia,serif; font-size:16px; font-weight:700}
+.ctheory{margin:6px 0 10px; font-size:14px}
+.cexample{background:var(--code-bg); color:var(--code-fg); padding:12px 14px; border-radius:8px; font-family:ui-monospace,Consolas,monospace; font-size:13px; line-height:1.6; white-space:pre-wrap; margin:0 0 8px}
+.cexample .cl{display:block; border-radius:4px; padding:0 4px; margin:0 -4px; transition:background .3s}
+.cexample .cl-hl{background:#4a3a1a}
+.crow{margin-bottom:8px}
+.cout-mini{background:#141210; color:var(--code-fg); padding:8px 12px; border-radius:8px; font-family:ui-monospace,Consolas,monospace; font-size:13px; min-height:1.5em; white-space:pre-wrap; margin:0 0 6px}
+.cout-mini:empty{display:none}
+.cnote{font-size:13px; color:var(--muted); margin:0 0 8px; min-height:1.2em}
+.ctask{background:var(--amber); border-left:4px solid var(--amber-line); border-radius:8px; padding:10px 14px; font-size:14px}
+.cstatus{margin-left:6px}
+.cfail{color:#7a4a12}
+.cpass{color:var(--moss); font-weight:700; animation:cpulse .6s}
+@keyframes cpulse{0%{transform:scale(1)}40%{transform:scale(1.06)}100%{transform:scale(1)}}
+.cnext-hi{animation:cpulse .6s 2}
+#lessons{margin-top:14px}
+#lessons h3{
+  font-size:11px; letter-spacing:.12em; color:var(--muted);
+  margin:0 0 8px 2px; font-weight:600;
+}
+#lessons button{
+  font:inherit; font-size:13px; margin:0 6px 6px 0; padding:6px 12px;
+  border-radius:8px; border:1px solid var(--line);
+  background:var(--panel); color:var(--ink); cursor:pointer;
+}
+#lessons button:hover{border-color:var(--accent); color:var(--accent-dk)}
+
+/* docs page */
+.doc{max-width:720px; margin:0 auto; padding-bottom:48px}
+.doc h1{font-family:Georgia,serif; font-size:34px; margin:.8em 0 .3em}
+.doc h2{font-family:Georgia,serif; font-size:22px; margin-top:1.6em}
+.doc table{border-collapse:collapse; width:100%; font-size:14px; background:var(--panel)}
+.doc th,.doc td{text-align:left; padding:8px 10px; border-bottom:1px solid var(--line)}
+.doc th{font-size:11px; letter-spacing:.1em; color:var(--muted)}
+.doc code,.doc pre{font-family:ui-monospace,Consolas,monospace}
+.doc pre{background:var(--code-bg); color:var(--code-fg); padding:12px 14px; border-radius:8px; overflow-x:auto}
+.doc p code, .doc td code, .doc li code{background:#efe8d7; padding:1px 5px; border-radius:4px}
+
+@media(max-width:760px){
+  #layout{flex-direction:column}
+  #toolbar .hint{display:none}
+  .tagline{display:none}
+}

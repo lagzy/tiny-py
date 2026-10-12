@@ -1,0 +1,6 @@
+<!DOCTYPE html><html><head><link rel="stylesheet" href="../tiny/tiny.css"></head><body>
+<t-title id="a">Hi</t-title>
+<script>
+const s = getComputedStyle(document.getElementById('a'));
+document.body.innerHTML += (parseFloat(s.fontSize) > 16) ? '<p style="color:green">css OK ' + s.fontSize + '</p>' : '<p style="color:red">css FAIL</p>';
+</script></body></html>

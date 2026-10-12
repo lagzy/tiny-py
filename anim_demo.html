@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%23d9481f'/%3E%3Ctext x='8' y='12' font-size='10' text-anchor='middle' fill='white' font-family='monospace'%3Et%3C/text%3E%3C/svg%3E">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>tiny-py animation demo</title>
+<link rel="stylesheet" href="app/app.css">
+<style>
+.demo-wrap{max-width:920px; margin:0 auto; padding:24px 16px 64px}
+.demo-wrap>h1{font-family:Georgia,serif; font-size:38px; margin:.3em 0 .2em}
+.demo-lede{color:var(--muted); font-size:16px; max-width:620px}
+.vig{margin:26px 0}
+.vig h2{font-family:Georgia,serif; font-size:22px; margin:0 0 4px}
+.vig .why{color:var(--muted); font-size:14px; margin:0 0 12px}
+.dcode{background:var(--code-bg); color:var(--code-fg); padding:14px 16px; border-radius:10px 10px 0 0; font-family:ui-monospace,Consolas,monospace; font-size:14px; line-height:1.7; white-space:pre-wrap; margin:0; position:relative}
+.dcode .ln{color:#8a8474; display:inline-block; width:2em; user-select:none}
+.dcode .here{background:#4a3a1a; border-radius:4px}
+.dcode .dim{opacity:.35}
+.dout{background:#141210; color:var(--code-fg); padding:10px 12px; border-radius:0 0 10px 10px; font-family:ui-monospace,Consolas,monospace; font-size:13px; min-height:2.6em; white-space:pre-wrap; margin:0}
+.drow{display:flex; gap:8px; align-items:center; margin-top:10px; flex-wrap:wrap}
+.shelf{display:flex; gap:8px; margin-top:10px}
+.vbox{background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:6px 12px; font-family:ui-monospace,Consolas,monospace; font-size:13px; min-width:84px; text-align:center; transition:transform .25s, border-color .25s}
+.vbox b{display:block; font-size:11px; color:var(--muted); font-weight:600}
+.vbox.pop{transform:scale(1.12); border-color:var(--accent)}
+.chip{position:fixed; z-index:50; background:var(--panel); border:1px solid var(--accent); color:var(--ink); border-radius:8px; padding:4px 10px; font-family:ui-monospace,Consolas,monospace; font-size:13px; pointer-events:none; transition:left .7s cubic-bezier(.3,.7,.3,1), top .7s cubic-bezier(.3,.7,.3,1), opacity .3s}
+.skip-tag{font-size:11px; color:var(--muted); border:1px solid var(--line); border-radius:5px; padding:0 6px; margin-left:8px}
+.dstage{position:relative; height:170px; background:var(--panel); border:1px solid var(--line); border-radius:10px; overflow:hidden; margin-top:10px}
+.dtrail{position:absolute; left:60px; top:10px; bottom:10px; width:0; border-left:2px dashed var(--amber-line)}
+.dactor{position:absolute; width:34px; height:34px; border-radius:8px; left:43px; top:10px; transition:top .8s cubic-bezier(.4,0,.6,1)}
+.toggle.on{background:var(--ink); border-color:var(--ink); color:var(--paper)}
+.burst-spot{position:relative; height:120px; background:var(--panel); border:1px solid var(--line); border-radius:10px; overflow:hidden; margin-top:10px}
+.bit{position:absolute; left:50%; top:50%; width:14px; height:14px; border-radius:4px; opacity:0}
+.bit.go{animation:burst .8s ease-out forwards}
+@keyframes burst{0%{opacity:1; transform:translate(0,0) scale(1)}100%{opacity:0; transform:translate(var(--dx),var(--dy)) scale(.6)}}
+@media (prefers-reduced-motion: reduce){
+.chip,.dactor,.vbox{transition:none}
+.bit.go{animation-duration:.01s}
+}
+</style>
+</head>
+<body>
+<header class="top">
+<span class="logo" aria-hidden="true"><i></i><i></i><i></i></span>
+<span class="wordmark">tiny-py</span>
+<span class="tagline">animation demo</span>
+<a class="btn" href="index.html">Home</a>
+<a class="btn" href="learn.html">Learn</a>
+</header>
+<div class="demo-wrap">
+<h1>How the lessons move.</h1>
+<p class="demo-lede">Five animation sketches for the course traces. Same colors, same type — only motion is new. Each replays.</p>
+
+<section class="vig" id="v-chip">
+<h2>1. The traveling chip</h2>
+<p class="why">Values travel. Code moves stuff.</p>
+<pre class="dcode" id="c1code"><span class="ln">1</span> <span class="tok-fn">print</span>(<span class="tok-str" id="c1str">"Hello!"</span>)</pre>
+<pre class="dout" id="c1out" aria-live="polite"></pre>
+<div class="drow"><button class="btn primary" id="c1play">Play</button></div>
+</section>
+
+<section class="vig" id="v-shelf">
+<h2>2. The variable shelf</h2>
+<p class="why">Names are boxes. Watch them change.</p>
+<pre class="dcode" id="c2code"><span class="ln">1</span> x = <span class="tok-num">42</span>
+<span class="ln">2</span> <span class="tok-kw">for</span> i <span class="tok-kw">in</span> <span class="tok-fn">range</span>(<span class="tok-num">3</span>):
+<span class="ln">3</span>     <span class="tok-fn">print</span>(i)</pre>
+<pre class="dout" id="c2out" aria-live="polite"></pre>
+<div class="shelf"><div class="vbox" id="vbox-x"><b>x</b><span>–</span></div><div class="vbox" id="vbox-i"><b>i</b><span>–</span></div></div>
+<div class="drow"><button class="btn primary" id="c2play">Play</button></div>
+</section>
+
+<section class="vig" id="v-fork">
+<h2>3. The fork</h2>
+<p class="why">Only one road runs. The other dims.</p>
+<div class="drow" id="c3toggles"><button class="btn toggle on" data-age="15">age = 15</button><button class="btn toggle" data-age="10">age = 10</button></div>
+<pre class="dcode" id="c3code"><span class="ln">1</span> age = <span class="tok-num" id="c3val">15</span>
+<span class="ln">2</span> <span id="c3if"><span class="tok-kw">if</span> age >= <span class="tok-num">13</span>:</span>
+<span class="ln">3</span>     <span id="c3then"><span class="tok-fn">print</span>(<span class="tok-str">"teen"</span>)</span>
+<span class="ln">4</span> <span class="tok-kw">else</span>:
+<span class="ln">5</span>     <span id="c3else"><span class="tok-fn">print</span>(<span class="tok-str">"kid"</span>)</span></pre>
+<pre class="dout" id="c3out" aria-live="polite"></pre>
+<div class="drow"><button class="btn primary" id="c3play">Play</button></div>
+</section>
+
+<section class="vig" id="v-fall">
+<h2>4. The falling square</h2>
+<p class="why">Gravity accumulates: speed 0 → 2 → 4.</p>
+<pre class="dcode" id="c4code"><span class="ln">1</span> vy = <span class="tok-num">0</span>
+<span class="ln">2</span> gravity = <span class="tok-num">2</span>
+<span class="ln">3</span> vy = vy + gravity <span class="tok-com"># frame 1</span>
+<span class="ln">4</span> vy = vy + gravity <span class="tok-com"># frame 2</span></pre>
+<div class="shelf"><div class="vbox" id="vbox-vy"><b>vy</b><span>0</span></div></div>
+<div class="dstage"><div class="dtrail"></div><div class="dactor" id="c4actor" style="background:#d9481f"></div></div>
+<div class="drow"><button class="btn primary" id="c4play">Play</button></div>
+</section>
+
+<section class="vig" id="v-burst">
+<h2>5. The burst</h2>
+<p class="why">Correct gets three squares. Sparingly.</p>
+<div class="burst-spot" id="c5spot"></div>
+<div class="drow"><button class="btn primary" id="c5play">Simulate correct answer</button></div>
+</section>
+</div>
+<script>
+(function(){
+function calm(){ try{ return window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches; }catch(e){ return false; } }
+function byId(id){ return document.getElementById(id); }
+function wait(ms){ return new Promise(function(r){ setTimeout(r, calm()?0:ms); }); }
+function fly(text, fromEl, toEl, done){
+var a=fromEl.getBoundingClientRect(), b=toEl.getBoundingClientRect();
+var c=document.createElement('div');
+c.className='chip'; c.textContent=text;
+c.style.left=(a.left+a.width/2-20)+'px'; c.style.top=(a.top-8)+'px';
+document.body.appendChild(c);
+requestAnimationFrame(function(){
+c.style.left=(b.left+12)+'px'; c.style.top=(b.top+6)+'px';
+});
+setTimeout(function(){ c.style.opacity='0'; setTimeout(function(){ c.remove(); done&&done(); },320); }, calm()?0:750);
+}
+function setBox(id,val){
+var box=byId(id); if(!box) return;
+box.querySelector('span').textContent=val;
+box.classList.remove('pop'); void box.offsetWidth; box.classList.add('pop');
+}
+// 1. chip: string -> console
+byId('c1play').addEventListener('click',function(){
+var out=byId('c1out'); out.textContent='';
+fly('"Hello!"', byId('c1str'), out, function(){ out.textContent='Hello!'; });
+});
+// 2. shelf: x drops in, i flips per round
+byId('c2play').addEventListener('click',function(){
+var out=byId('c2out'); out.textContent='';
+fly('42', byId('c2code'), byId('vbox-x'), function(){
+setBox('vbox-x','42');
+var i=0;
+(function round(){
+if(i>2) return;
+setBox('vbox-i',String(i));
+out.textContent+=(out.textContent?'\n':'')+i;
+i++;
+setTimeout(round, calm()?0:800);
+})();
+});
+});
+// 3. fork: toggle age, arrow road glows, other dims
+var age=15;
+document.querySelectorAll('#c3toggles .toggle').forEach(function(b){
+b.addEventListener('click',function(){
+document.querySelectorAll('#c3toggles .toggle').forEach(function(x){ x.classList.remove('on'); });
+b.classList.add('on'); age=+b.dataset.age;
+byId('c3val').textContent=age;
+byId('c3out').textContent='';
+});
+});
+function paintFork(){
+var teen=age>=13;
+var t=byId('c3then'), e=byId('c3else');
+t.classList.toggle('here',teen); e.classList.toggle('here',!teen);
+t.classList.toggle('dim',!teen); e.classList.toggle('dim',teen);
+var old=t.parentNode.querySelector('.skip-tag')||e.parentNode.querySelector('.skip-tag');
+if(old) old.remove();
+var tag=document.createElement('span');
+tag.className='skip-tag'; tag.textContent='skipped';
+(teen?e:t).appendChild(tag);
+byId('c3out').textContent=teen?'teen':'kid';
+}
+byId('c3play').addEventListener('click',function(){
+byId('c3out').textContent='';
+var t=byId('c3then'), e=byId('c3else');
+t.classList.remove('here','dim'); e.classList.remove('here','dim');
+var old=document.querySelector('#c3code .skip-tag'); if(old) old.remove();
+setTimeout(paintFork, calm()?0:900);
+});
+// 4. falling square follows vy
+byId('c4play').addEventListener('click',function(){
+var actor=byId('c4actor'); actor.style.top='10px';
+setBox('vbox-vy','0');
+var vy=0, frame=0;
+(function drop(){
+if(frame>=2) return;
+frame++;
+setTimeout(function(){
+vy+=2; setBox('vbox-vy',String(vy));
+actor.style.top=(10+frame*52)+'px';
+setTimeout(drop, calm()?0:850);
+}, calm()?0:400);
+})();
+});
+// 5. squares burst
+byId('c5play').addEventListener('click',function(){
+var spot=byId('c5spot'); spot.innerHTML='';
+var colors=['#d9481f','#4d7c0f','#e3bd55','#d9481f','#4d7c0f','#e3bd55'];
+for(var i=0;i<6;i++){
+var b=document.createElement('div');
+b.className='bit'; b.style.background=colors[i];
+var ang=(i/6)*Math.PI*2;
+b.style.setProperty('--dx',Math.round(Math.cos(ang)*90)+'px');
+b.style.setProperty('--dy',Math.round(Math.sin(ang)*60)+'px');
+spot.appendChild(b);
+(function(el){ requestAnimationFrame(function(){ el.classList.add('go'); }); })(b);
+}
+});
+})();
+</script>
+</body>
+</html>

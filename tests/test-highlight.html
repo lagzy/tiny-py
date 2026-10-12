@@ -1,0 +1,8 @@
+<!DOCTYPE html><html><body>
+<script src="../app/highlight.js"></script>
+<script>
+const out = Highlighter.paint('for i in range(3):\n    print("hi")  # note\n');
+const ok = out.includes('tok-kw') && out.includes('tok-str') && out.includes('tok-com')
+  && out.includes('tok-num') && out.includes('for');
+document.body.innerHTML += ok ? '<p style="color:green">highlight OK</p>' : '<p style="color:red">highlight FAIL: ' + out + '</p>';
+</script></body></html>

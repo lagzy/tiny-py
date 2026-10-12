@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%23d9481f'/%3E%3Ctext x='8' y='12' font-size='10' text-anchor='middle' fill='white' font-family='monospace'%3Et%3C/text%3E%3C/svg%3E">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>tiny-py course</title>
+<link rel="stylesheet" href="tiny/tiny.css">
+<link rel="stylesheet" href="app/app.css">
+</head>
+<body>
+<header class="top">
+<span class="logo" aria-hidden="true"><i></i><i></i><i></i></span>
+<span class="wordmark">tiny-py</span>
+<span class="tagline">the course</span>
+<a class="btn" href="index.html">Home</a>
+<a class="btn" href="play.html">Playground</a>
+</header>
+<div class="lprog"><div id="lprog-fill"></div></div>
+<main class="learn-full">
+<p class="lkicker" id="lkicker"></p>
+<h1 id="ltitle"></h1>
+<p class="ltheory" id="ltheory"></p>
+<p class="lstep" id="lstep"></p>
+<div class="vtabs" id="vtabs"></div>
+<div class="ldemo">
+<div class="panel">
+<div class="panel-head">HOW IT RUNS<button class="btn" id="lplay">Play</button></div>
+<pre id="lcode" aria-label="Example code"></pre>
+</div>
+<div class="panel">
+<div class="panel-head">OUTPUT</div>
+<pre id="lout" aria-live="polite"></pre>
+</div>
+</div>
+<p id="lnote"></p>
+<div id="lministage" aria-hidden="true" title="Demo — click to replay"></div>
+<div class="ltask"><b>Your turn:</b> <span id="ltaskprompt"></span><span class="cstatus" id="ltaskstatus"></span></div>
+<nav class="lnav"><button class="btn" id="lprev">← Prev</button><span class="lkeys">← → keys work too</span><button class="btn primary" id="lnext">Next →</button></nav>
+<h2 class="ltry">Try it below — same page, no clicking around.</h2>
+<div class="lplayground">
+<div id="layout">
+<section id="left">
+<div class="panel">
+<div class="panel-head">CODE</div>
+<div class="editor-wrap">
+<pre id="highlight" aria-hidden="true"></pre>
+<textarea id="editor" spellcheck="false" aria-label="Code editor"></textarea>
+</div>
+<div id="toolbar">
+<button class="btn primary" id="btn-run">Run</button>
+<span class="hint"><kbd>Ctrl</kbd>+<kbd>Enter</kbd> to run</span>
+</div>
+</div>
+</section>
+<section id="right">
+<div class="panel">
+<div class="panel-head"><span class="live-dot" aria-hidden="true"></span>PREVIEW<span class="key-hint" id="keyhint" hidden>click the stage, then play</span></div>
+<iframe id="preview" sandbox="allow-scripts" title="live preview"></iframe>
+</div>
+<div class="panel" id="console-panel">
+<div class="panel-head">CONSOLE<span class="cout-hint">print() lands here</span><button class="btn" id="btn-clear">Clear</button></div>
+<pre id="cout" aria-live="polite"></pre>
+<div id="cinrow" hidden><span id="cprompt">input:</span><input id="cin" type="text" autocomplete="off" aria-label="Type your answer and press Send"><button class="btn" id="btn-send">Send</button></div>
+</div>
+</section>
+</div>
+<footer id="assistant" aria-live="polite">Type in the editor, press Run, watch the console.</footer>
+</div>
+</main>
+<script src="app/editor.js"></script>
+<script src="app/highlight.js"></script>
+<script src="app/tinypy.js"></script>
+<script src="app/preview.js"></script>
+<script src="app/console.js"></script>
+<script src="app/assistant.js"></script>
+<script src="app/course-data.js"></script>
+<script src="app/lessons.js"></script>
+<script>
+(function(){
+var idx=0, vi=0, si=0, playing=false, autoT=null, typeT=null;
+function calm(){ try{ return window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches; }catch(e){ return false; } }
+function prog(){ try{ return JSON.parse(localStorage.getItem('tiny-py-course')||'null')||{idx:0,done:[]}; }catch(e){ return {idx:0,done:[]}; } }
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function byId(id){ return document.getElementById(id); }
+function lesson(){ return (window.LESSONS||[])[idx]; }
+// A lesson can show several ways to run: variants override example/trace,
+// falling back to the lesson's own. Only variant 0 exists for most lessons.
+function variantsOf(l){ if(!l||!l.variants||!l.variants.length) return [{label:'',example:l.example,trace:l.trace}]; return l.variants.map(function(v){ return {label:v.label||'',example:(v.example===undefined?l.example:v.example),trace:(v.trace===undefined?l.trace:v.trace)}; }); }
+function activeVariant(){ var vs=variantsOf(lesson()); return vs[Math.min(vi,vs.length-1)]; }
+// Big lessons split into steps: each step has its own starter + task and
+// checks itself. Plain lessons are one silent step, so old code keeps working.
+function stepsOf(l){ return (l&&l.steps&&l.steps.length)?l.steps:[{starter:l.starter,task:l.task}]; }
+function curStep(){ var s=stepsOf(lesson()); return s[Math.min(si,s.length-1)]; }
+// Demo code shares the editor's highlighter, so examples look exactly
+// like typed code. Falls back to plain text if highlight.js is absent.
+function codeLines(code){
+var html=(window.Highlighter)?window.Highlighter.paint(code):esc(code);
+return String(html).replace(/\n$/,'').split('\n').map(function(ln,n){
+return '<span class="cl" data-l="'+(n+1)+'">'+(ln||' ')+'</span>'; }).join('\n');
+}
+function syncCourse(){ if(window.Course) window.Course.idx=idx; }
+function setStarter(code){
+if(window.Editor) window.Editor.set(code);
+else { var ed=byId('editor'); if(ed) ed.value=code; }
+}
+function render(){
+var L=window.LESSONS||[], lesson=L[idx]; if(!lesson) return;
+syncCourse();
+var p=prog(), done=(p.done||[]).filter(Boolean).length;
+byId('lkicker').textContent='Lesson '+(idx+1)+' of '+L.length+' · '+done+' done';
+byId('ltitle').textContent=lesson.title.replace(/^\d+ /,'');
+byId('ltheory').textContent=lesson.theory;
+var steps=stepsOf(lesson), step=curStep();
+var sl=byId('lstep');
+if(steps.length>1){ sl.textContent='Step '+(si+1)+' of '+steps.length+(step.title?' — '+step.title:''); sl.style.display=''; }
+else{ sl.textContent=''; sl.style.display='none'; }
+byId('ltaskprompt').textContent=step.task.prompt;
+var st=byId('ltaskstatus'); st.textContent=' — type below, press Run.'; st.className='cstatus';
+byId('lprog-fill').style.width=Math.round(100*done/L.length)+'%';
+byId('lprev').disabled=(idx===0);
+setStarter(step.starter);
+renderVariant();
+}
+function renderTabs(){
+var box=byId('vtabs'), vs=variantsOf(lesson());
+if(vs.length<2){ box.innerHTML=''; box.style.display='none'; return; }
+box.style.display='';
+box.innerHTML='';
+vs.forEach(function(v,i){
+var b=document.createElement('button');
+b.className='vtab'+(i===vi?' on':''); b.textContent=v.label||('try '+(i+1));
+b.addEventListener('click',function(){ selectVariant(i); });
+box.appendChild(b);
+});
+}
+function renderVariant(){
+var v=activeVariant();
+byId('lcode').innerHTML=codeLines(v.example||'');
+byId('lout').textContent=''; byId('lnote').textContent='';
+byId('lministage').innerHTML='';
+renderTabs();
+playing=false; if(typeT)clearInterval(typeT);
+if(autoT)clearTimeout(autoT);
+if(calm()){ play(); }
+else{ autoT=setTimeout(play,700); }
+}
+function play(){
+var cur=lesson(); if(!cur||playing) return;
+playing=true;
+var steps=activeVariant().trace||[], i=0;
+var outEl=byId('lout'), noteEl=byId('lnote'), stage=byId('lministage');
+document.querySelectorAll('#lcode .cl').forEach(function(s){ s.classList.remove('cl-hl'); });
+outEl.textContent=''; noteEl.textContent=''; stage.innerHTML='';
+// Types a step's output like someone typing, then continues.
+function typeChunk(text,done){
+var base=outEl.textContent;
+var target=base+(base?'\n':'')+text;
+if(calm()||!text){ outEl.textContent=target; setTimeout(done,500); return; }
+var at=base.length;
+if(typeT)clearInterval(typeT);
+typeT=setInterval(function(){
+if(!playing){ clearInterval(typeT); return; }
+at++;
+outEl.textContent=target.slice(0,at);
+if(at>=target.length){ clearInterval(typeT); setTimeout(done,650); }
+},22);
+}
+(function step(){
+if(!playing) return;
+if(i>=steps.length){ playing=false; return; }
+var st=steps[i];
+document.querySelectorAll('#lcode .cl').forEach(function(s){ s.classList.remove('cl-hl'); });
+(st.lines||[]).forEach(function(n){
+var s=document.querySelector('#lcode .cl[data-l="'+n+'"]'); if(s) s.classList.add('cl-hl'); });
+noteEl.textContent=st.note||'';
+if(st.spawn){
+var d=document.createElement('div');
+d.className='lspawn';
+d.style.background=st.spawn.color||'blue';
+d.style.left=(st.spawn.x||20)+'px'; d.style.top=(st.spawn.y||20)+'px';
+stage.appendChild(d);
+}
+i++;
+if(st.awaitClick&&!calm()&&d){
+d.className='lspawn await';
+d.addEventListener('click',function(ev){
+if(ev&&ev.stopPropagation) ev.stopPropagation();
+if(!playing) return;
+d.className='lspawn';
+if(st.out) typeChunk(st.out,step); else step();
+});
+return;
+}
+if(st.out) typeChunk(st.out,step);
+else setTimeout(step,650);
+})();
+}
+function checkCurrent(){
+var L=window.LESSONS||[], lesson=L[idx];
+var st=byId('ltaskstatus');
+if(!lesson||!window.Course||!window.Editor) return {pass:false,msg:'Not ready.'};
+var steps=stepsOf(lesson), step=curStep();
+var res=window.Course.checkTask(window.Editor.get(),step.task);
+if(!st) return res;
+if(res.pass){
+if(si<steps.length-1){
+si++; render();
+var st2=byId('ltaskstatus');
+st2.textContent=' ✓ '+res.msg+' Next step loaded below.'; st2.className='cstatus cpass';
+}else{
+st.textContent=' ✓ '+res.msg; st.className='cstatus cpass';
+window.Course.done[idx]=true; window.Course.save();
+}
+}else{
+st.textContent=' — '+res.msg; st.className='cstatus cfail';
+}
+return res;
+}
+function goto(i){ var L=window.LESSONS||[]; idx=Math.max(0,Math.min(i,L.length-1)); vi=0; si=0; playing=false; render(); if(window.Course) window.Course.save(); }
+function selectStep(i){ var s=stepsOf(lesson()); si=Math.max(0,Math.min(i,s.length-1)); playing=false; render(); }
+function selectVariant(i){ var vs=variantsOf(lesson()); if(i<0||i>=vs.length) return; vi=i; renderVariant(); }
+function replayTrace(){ playing=false; if(typeT)clearInterval(typeT); play(); }
+byId('lplay').addEventListener('click',replayTrace);
+byId('lministage').addEventListener('click',function(){ if(document.querySelector('#lministage .await'))return; replayTrace(); });
+byId('btn-run').addEventListener('click',function(){ setTimeout(checkCurrent,600); });
+byId('lprev').addEventListener('click',function(){ goto(idx-1); });
+byId('lnext').addEventListener('click',function(){ goto(idx+1); });
+document.addEventListener('keydown',function(e){
+if(/TEXTAREA|INPUT/.test(e.target.tagName||'')) return;
+if(document.activeElement&&document.activeElement.tagName==='IFRAME') return;
+if(e.key==='ArrowRight'){ goto(idx+1); }
+if(e.key==='ArrowLeft'){ goto(idx-1); }
+});
+idx=Math.min(prog().idx||0,(window.LESSONS||[]).length-1);
+render();
+window.Learn={checkCurrent:checkCurrent,render:render,goto:goto,selectVariant:selectVariant,replayTrace:replayTrace,selectStep:selectStep,stepIndex:function(){return si;}};
+})();
+</script>
+</body>
+</html>

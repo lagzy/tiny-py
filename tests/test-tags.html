@@ -1,0 +1,7 @@
+<!DOCTYPE html><html><body>
+<script src="../tiny/tiny-tags.js"></script>
+<t-box id="b" color="red">hi</t-box>
+<script>
+const el=document.getElementById('b');
+document.body.innerHTML+=el.style.background?'<p style="color:green">tags OK</p>':'<p style="color:red">tags FAIL</p>';
+</script></body></html>

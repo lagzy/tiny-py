@@ -1,0 +1,7 @@
+<!DOCTYPE html><html><body><textarea id="editor">if x == 1
+    print("hi")</textarea><div id="assistant"></div>
+<script src="../app/assistant.js"></script>
+<script>
+const h=Assistant.scan();
+document.body.innerHTML+=h.includes('colon')?'<p style="color:green">assistant OK: '+h+'</p>':'<p style="color:red">assistant FAIL</p>';
+</script></body></html>

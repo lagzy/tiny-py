@@ -1,0 +1,6 @@
+<!DOCTYPE html><html><body>
+<textarea id="editor">hi</textarea>
+<script src="../app/editor.js"></script>
+<script>
+document.body.innerHTML += (window.Editor && Editor.get() === 'hi') ? '<p style="color:green">editor OK</p>' : '<p style="color:red">editor FAIL</p>';
+</script></body></html>
