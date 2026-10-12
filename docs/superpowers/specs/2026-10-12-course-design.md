@@ -4,7 +4,7 @@
 - Checking: BOTH, output first — console-output match for print tasks,
   code-contains + runs-clean for visual game tasks.
 - Player lives in the existing `#lessons` panel (no new page).
-- 14-lesson arc: print → platformer capstone.
+- 19-lesson arc: print → windows capstone.
 
 ## Data model (app/course-data.js: LESSONS array)
 Each lesson: `{id, title, theory, example, trace, starter, task}`.
@@ -34,13 +34,16 @@ Fail → hint text, never blocks.
 4. must[] substrings present? else fail naming the missing piece + hint.
 5. Else pass.
 
-## The 14 lessons
+## The 19 lessons
 1 print-hello · 2 print-math (output `123`) · 3 variables · 4 input ·
 5 if/else · 6 for · 7 while · 8 lists · 9 functions · 10 first Entity
 (visual) · 11 clicker+score (visual) · 12 guess game (canned answer) ·
 13 tic-tac-toe 2-player (scripted X-wins transcript match) ·
 14 platformer capstone (starter gaps: `gravity = 2`, jump `vy = -12`;
-ground + land pre-written; code check + clean run).
+ground + land pre-written; code check + clean run) ·
+15 strings (`+` glue, `str()`) · 16 logic (`and`/`not`) · 17 nested-loop
+patterns (star triangle transcript) · 18 `import math` (sqrt, factorial) ·
+19 `import tkinter` window (must-only, prints nothing).
 
 ## Non-goals
 No new builtins (arc fits current engine), no engine changes,
