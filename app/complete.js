@@ -5,14 +5,14 @@
 (function(){
 var WORDS=('print len range str int input def return if elif else while for in and or not is pass import from as True False None '+
 // game API (tiny/ursina)
-'Entity box circle player coin image text score on_click on_key say clear bg color update '+
+'Entity box circle player coin image text score on_click on_key say clear bg color update lerp destroy invoke time animate_x animate_y animate_scale '+
 // modules + widget names
 'math tkinter tiny ursina Tk Label Button Entry').split(' ');
 var MEMBERS={
 math:'pi e tau inf nan sqrt cbrt floor ceil trunc fabs factorial gcd comb perm pow exp log log10 log2 sin cos tan asin acos atan atan2 hypot degrees radians copysign isclose isfinite isinf isnan'.split(' '),
 tkinter:['Tk','Label','Button','Entry'],
-ursina:'Entity box circle player coin image text score on_click on_key say clear bg color update'.split(' '),
-tiny:'Entity box circle player coin image text score on_click on_key say clear bg color update'.split(' ')
+ursina:'Entity box circle player coin image text score on_click on_key say clear bg color update lerp destroy invoke time'.split(' '),
+tiny:'Entity box circle player coin image text score on_click on_key say clear bg color update lerp destroy invoke time'.split(' ')
 };
 var PAIRS={'(' : ')', '[' : ']', '{' : '}', '"' : '"', "'" : "'"};
 var CLOSERS={')' : 1, ']' : 1, '}' : 1};

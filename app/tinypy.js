@@ -331,7 +331,7 @@ var PRELUDE = [
 '  isinf: function(x){ x = Number(x); return x === Infinity || x === -Infinity; },',
 '  isnan: function(x){ return isNaN(Number(x)); }',
 '};',
-'var ursina = {Entity: Entity, box: box, circle: circle, player: player, coin: coin, text: text, score: score, on_click: on_click, on_key: on_key, say: say, clear: clear, bg: bg, color: color};',
+'var ursina = {Entity: Entity, box: box, circle: circle, player: player, coin: coin, text: text, score: score, on_click: on_click, on_key: on_key, say: say, clear: clear, bg: bg, color: color, lerp: lerp, destroy: destroy, invoke: invoke, time: time};',
 'var tiny = ursina;',
 'var tkinter = (function(){',
 '  var NODOC = (typeof document === "undefined");',
@@ -378,6 +378,9 @@ var PRELUDE = [
 
 function friendly(err){
   var msg = String((err && err.message) || err);
+  var no3d = msg.match(/^([^ ]+) is not defined$/);
+  if(no3d && {camera: 1, Vec3: 1, Vec2: 1, Audio: 1, Shader: 1, Mesh: 1}[no3d[1]])
+    return "'" + no3d[1] + "' is real Ursina but needs 3D/sound — not in tiny-py yet (offline 2D subset: animate_x, lerp, destroy, invoke + game API).";
   var undef = msg.match(/^([^ ]+) is not defined$/);
   if(undef) return "'" + undef[1] + "' is not available in tiny-py yet (offline subset: print, len, range, str, int, input, basics + game API. Importable: math, tkinter, tiny, ursina).";
   return msg;
