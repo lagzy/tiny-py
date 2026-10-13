@@ -63,7 +63,8 @@ Type (system stacks only — must work offline from `file://`):
    contrast draws the eye to where typing happens.
 8. **IDs are contract.** `#editor #preview #assistant #lessons #toolbar
    #btn-run #btn-reset #btn-share #btn-save #file-list #btn-file-save #btn-file-del
-   #images-panel #img-list #btn-img-add #img-file`
+   #images-panel #img-list #btn-img-add #img-file #btn-undo #btn-redo
+   #btn-max-code #btn-max-preview`
    must survive any redesign — `app/*.js` depends on them. `#assistant` must stay a plain-text node:
    `assistant.js` overwrites `textContent`, so no child markup inside it.
 

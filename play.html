@@ -24,6 +24,7 @@
 <select id="file-list" aria-label="Saved files"><option value="">My files…</option></select>
 <button class="btn" id="btn-file-save">Save file</button>
 <button class="btn" id="btn-file-del">Delete</button>
+<button class="btn" id="btn-max-code" aria-label="Maximize"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg></button>
 </span>
 </div>
 <div class="editor-wrap">
@@ -32,6 +33,8 @@
 </div>
 <div id="toolbar">
 <button class="btn primary" id="btn-run">Run</button>
+<button class="btn" id="btn-undo" disabled>↩ Undo</button>
+<button class="btn" id="btn-redo" disabled>Redo ↪</button>
 <button class="btn" id="btn-reset">Reset</button>
 <button class="btn" id="btn-share">Share</button>
 <button class="btn" id="btn-save">Download</button>
@@ -45,7 +48,7 @@
 </section>
 <section id="right">
 <div class="panel">
-<div class="panel-head"><span class="live-dot" aria-hidden="true"></span>PREVIEW<span class="key-hint" id="keyhint" hidden>click the stage, then play</span></div>
+<div class="panel-head"><span class="live-dot" aria-hidden="true"></span>PREVIEW<span class="key-hint" id="keyhint" hidden>click the stage, then play</span><button class="btn" id="btn-max-preview" aria-label="Maximize"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg></button></div>
 <iframe id="preview" sandbox="allow-scripts" title="live preview"></iframe>
 </div>
 <div class="panel" id="console-panel">
@@ -68,5 +71,6 @@
 <script src="app/assistant.js"></script>
 <script src="app/files.js"></script>
 <script src="app/images.js"></script>
+<script src="app/max.js"></script>
 </body>
 </html>

@@ -15,7 +15,12 @@
 <span class="tagline">the course</span>
 <a class="btn" href="index.html">Home</a>
 <a class="btn" href="play.html">Playground</a>
+<button class="btn" id="lmapbtn">Map</button>
 </header>
+<div id="lmap" hidden>
+<div class="lmap-head"><b>Course map</b><span id="lmapcount"></span><button class="btn" id="lmapclose">Close</button></div>
+<div class="lmap-grid" id="lmapgrid"></div>
+</div>
 <div class="lprog"><div id="lprog-fill"></div></div>
 <main class="learn-full">
 <p class="lkicker" id="lkicker"></p>
@@ -42,20 +47,22 @@
 <div id="layout">
 <section id="left">
 <div class="panel">
-<div class="panel-head">CODE</div>
+<div class="panel-head">CODE<button class="btn" id="btn-max-code" aria-label="Maximize"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg></button></div>
 <div class="editor-wrap">
 <pre id="highlight" aria-hidden="true"></pre>
 <textarea id="editor" spellcheck="false" aria-label="Code editor"></textarea>
 </div>
 <div id="toolbar">
 <button class="btn primary" id="btn-run">Run</button>
+<button class="btn" id="btn-undo" disabled>↩ Undo</button>
+<button class="btn" id="btn-redo" disabled>Redo ↪</button>
 <span class="hint"><kbd>Ctrl</kbd>+<kbd>Enter</kbd> to run</span>
 </div>
 </div>
 </section>
 <section id="right">
 <div class="panel">
-<div class="panel-head"><span class="live-dot" aria-hidden="true"></span>PREVIEW<span class="key-hint" id="keyhint" hidden>click the stage, then play</span></div>
+<div class="panel-head"><span class="live-dot" aria-hidden="true"></span>PREVIEW<span class="key-hint" id="keyhint" hidden>click the stage, then play</span><button class="btn" id="btn-max-preview" aria-label="Maximize"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg></button></div>
 <iframe id="preview" sandbox="allow-scripts" title="live preview"></iframe>
 </div>
 <div class="panel" id="console-panel">
@@ -70,6 +77,7 @@
 </main>
 <script src="app/editor.js"></script>
 <script src="app/complete.js"></script>
+<script src="app/max.js"></script>
 <script src="app/highlight.js"></script>
 <script src="app/tinypy.js"></script>
 <script src="app/preview.js"></script>
@@ -220,22 +228,45 @@ return res;
 }
 function goto(i){ var L=window.LESSONS||[]; idx=Math.max(0,Math.min(i,L.length-1)); vi=0; si=0; playing=false; render(); if(window.Course) window.Course.save(); }
 function selectStep(i){ var s=stepsOf(lesson()); si=Math.max(0,Math.min(i,s.length-1)); playing=false; render(); }
+// Roadmap: every lesson as a button, done ones ticked, current highlighted.
+function renderMap(){
+var L=window.LESSONS||[], grid=byId('lmapgrid'); if(!grid) return;
+var p=prog();
+grid.innerHTML='';
+byId('lmapcount').textContent=(p.done||[]).filter(Boolean).length+' of '+L.length+' done';
+L.forEach(function(lesson, i){
+var b=document.createElement('button');
+b.className='lmap-item'+((p.done||[])[i]?' done':'')+(i===idx?' on':'');
+var label=document.createElement('span'); label.className='n'; label.textContent=((p.done||[])[i]?'✓ ':'')+(i+1)+'. ';
+var title=document.createElement('span'); title.textContent=lesson.title.replace(/^\d+ /,'');
+b.appendChild(label); b.appendChild(title);
+b.addEventListener('click',function(){ closeMap(); goto(i); });
+grid.appendChild(b);
+});
+}
+function openMap(){ renderMap(); byId('lmap').hidden=false; }
+function closeMap(){ var m=byId('lmap'); if(m) m.hidden=true; }
+function toggleMap(){ var m=byId('lmap'); if(!m) return; if(m.hidden) openMap(); else closeMap(); }
 function selectVariant(i){ var vs=variantsOf(lesson()); if(i<0||i>=vs.length) return; vi=i; renderVariant(); }
 function replayTrace(){ playing=false; if(typeT)clearInterval(typeT); play(); }
 byId('lplay').addEventListener('click',replayTrace);
+byId('lmapbtn').addEventListener('click',toggleMap);
+byId('lmapclose').addEventListener('click',closeMap);
 byId('lministage').addEventListener('click',function(){ if(document.querySelector('#lministage .await'))return; replayTrace(); });
 byId('btn-run').addEventListener('click',function(){ setTimeout(checkCurrent,600); });
 byId('lprev').addEventListener('click',function(){ goto(idx-1); });
 byId('lnext').addEventListener('click',function(){ goto(idx+1); });
 document.addEventListener('keydown',function(e){
+// Arrow keys skip lessons — disabled while typing
 if(/TEXTAREA|INPUT/.test(e.target.tagName||'')) return;
 if(document.activeElement&&document.activeElement.tagName==='IFRAME') return;
+if(e.key==='Escape'){ closeMap(); return; }
 if(e.key==='ArrowRight'){ goto(idx+1); }
 if(e.key==='ArrowLeft'){ goto(idx-1); }
 });
 idx=Math.min(prog().idx||0,(window.LESSONS||[]).length-1);
 render();
-window.Learn={checkCurrent:checkCurrent,render:render,goto:goto,selectVariant:selectVariant,replayTrace:replayTrace,selectStep:selectStep,stepIndex:function(){return si;}};
+window.Learn={checkCurrent:checkCurrent,render:render,goto:goto,selectVariant:selectVariant,replayTrace:replayTrace,selectStep:selectStep,stepIndex:function(){return si;},openMap:openMap,closeMap:closeMap};
 })();
 </script>
 </body>

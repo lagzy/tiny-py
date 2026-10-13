@@ -8,7 +8,12 @@ line(t){const e=this.el();if(!e)return;e.textContent+=(e.textContent?'\n':'')+t;
 clear(){const e=this.el();if(e)e.textContent='';this.done();},
 ask(prompt){const r=this.row();if(!r)return;r.hidden=false;
 const p=document.getElementById('cprompt');if(p)p.textContent=prompt||'input:';
-const i=document.getElementById('cin');if(i){i.value='';i.focus();}},
+const i=document.getElementById('cin');if(!i)return;i.value='';
+i.placeholder='type answer + Send (Enter works too)';
+// Never yank focus out of the editor (or any typing spot): the user is
+// mid-thought. Focus only when nothing editable has it.
+const ae=document.activeElement;
+if(!(ae&&/TEXTAREA|INPUT|SELECT/.test(ae.tagName||''))) i.focus();},
 done(){const r=this.row();if(r)r.hidden=true;},
 send(){const i=document.getElementById('cin');if(!i)return;
 const f=document.getElementById('preview');

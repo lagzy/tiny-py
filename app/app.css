@@ -31,6 +31,7 @@ header.top{
   border:1px solid var(--line); background:transparent; color:var(--ink);
   cursor:pointer; text-decoration:none; display:inline-block;
 }
+.btn:disabled{opacity:.4; cursor:default}
 .btn:hover{border-color:var(--ink)}
 .btn.primary{background:var(--accent); border-color:var(--accent); color:#fff; font-weight:600}
 .btn.primary:hover{background:var(--accent-dk); border-color:var(--accent-dk)}
@@ -58,6 +59,27 @@ kbd{
 .live-dot{width:8px; height:8px; border-radius:50%; background:var(--moss); animation:pulse 2s infinite}
 .key-hint{margin-left:auto; letter-spacing:0; text-transform:none; font-weight:400; font-size:12px}
 .panel-head .btn{padding:3px 12px; font-size:12px}
+.panel-head .btn svg{vertical-align:-2px}
+.panel-head #btn-max-code{margin-left:auto}
+.panel-head #btn-max-preview{margin-left:auto}
+
+/* maximized panel overlay */
+.panel.max{position:fixed; inset:10px; z-index:60; display:flex; flex-direction:column; box-shadow:0 16px 48px rgba(0,0,0,.35)}
+.panel.max #editor{height:calc(100vh - 230px); resize:none}
+.panel.max #preview{height:calc(100vh - 120px)}
+
+/* course roadmap */
+#lmap{position:fixed; left:50%; transform:translateX(-50%); top:64px; width:min(680px,92vw); max-height:70vh; overflow:auto; background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:14px 16px; z-index:50; box-shadow:0 12px 32px rgba(0,0,0,.25)}
+#lmap[hidden]{display:none}
+.lmap-head{display:flex; gap:8px; align-items:center; margin-bottom:10px}
+.lmap-head b{font-size:15px}
+.lmap-head #lmapcount{color:var(--muted); font-size:13px; flex:1}
+.lmap-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:8px}
+.lmap-item{font:inherit; font-size:13px; text-align:left; padding:8px 10px; border-radius:8px; border:1px solid var(--line); background:transparent; color:var(--ink); cursor:pointer}
+.lmap-item:hover{border-color:var(--accent)}
+.lmap-item .n{font-weight:700}
+.lmap-item.done .n{color:var(--moss)}
+.lmap-item.on{border-color:var(--accent); box-shadow:inset 0 0 0 1px var(--accent)}
 
 /* VS Code-like autocomplete popup */
 .complete-box{

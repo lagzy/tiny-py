@@ -7,6 +7,8 @@ rules:[
 {re:/\b(true|false|null)\b/,msg:'Python spells them True, False, None — capital first letter.'},
 {re:/f["']/,msg:'f-strings are not in tiny-py yet — use "text " + str(x) instead.'},
  {re:/^\s*(import|from)\s+(?!tiny|ursina|math|tkinter)/m,msg:'Offline tiny-py has four modules: tiny, ursina, math, tkinter — try import math.'},
+ {re:/:\n[^\s#]/m,msg:'After a line ending with :, indent the next line by 4 spaces (Tab).'},
+ {re:/(?:[=(]\s*|^\s*)["'][^"'#\n]*$/m,msg:'Unclosed quote? Every " needs a closing " on the same line.'},
 ],
 scan(){
 const code=document.getElementById('editor')?.value||'';
