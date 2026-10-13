@@ -228,6 +228,28 @@ var PRELUDE = [
 '  return document.getElementById("stage") || null; }',
 'function __num(v, d){ v = Number(v); return isNaN(v) ? d : v; }',
 'function lerp(a, b, t){ a = Number(a); b = Number(b); t = Number(t); return a + (b - a) * t; }',
+'var __tweens = [], __delayed = [];',
+'var time = {dt: 0};',
+'function __tween(e, prop, to, seconds){',
+'  if(!e || e.dead) return;',
+'  seconds = Number(seconds); if(!(seconds > 0)) seconds = 0;',
+'  for(var i = __tweens.length - 1; i >= 0; i--){ if(__tweens[i].e === e && __tweens[i].prop === prop) __tweens.splice(i, 1); }',
+'  var from = (prop === "sc") ? e.sc : e[prop];',
+'  __tweens.push({e: e, prop: prop, from: from, to: Number(to), seconds: seconds, el: 0});',
+'  if(seconds === 0) __stepTween(__tweens[__tweens.length - 1], 1); }',
+'function __stepTween(tw, dt){',
+'  if(tw.e.dead) return true;',
+'  tw.el += dt;',
+'  var k = (tw.seconds <= 0) ? 1 : Math.min(1, tw.el / tw.seconds);',
+'  var v = tw.from + (tw.to - tw.from) * k;',
+'  if(tw.prop === "sc") tw.e.sc = v; else tw.e[tw.prop] = v;',
+'  if(tw.e.__sync) tw.e.__sync();',
+'  return k >= 1; }',
+'function __frame(dt){ dt = Number(dt); if(!(dt > 0)) dt = 0; time.dt = dt;',
+'  for(var i = __tweens.length - 1; i >= 0; i--){ if(__stepTween(__tweens[i], dt)) __tweens.splice(i, 1); }',
+'  for(var j = __delayed.length - 1; j >= 0; j--){ __delayed[j].t -= dt;',
+'    if(__delayed[j].t <= 0){ var f = __delayed[j].fn; __delayed.splice(j, 1); f(); } }',
+'  return 1; }',
 'function __mk(color, x, y, size, round){ var st = __stage(); if(!st) return null;',
 '  var d = document.createElement("div");',
 '  d.style.cssText = "position:absolute;left:" + x + "px;top:" + y + "px;width:" + size + "px;height:" + size + "px;background:" + color + ";" + (round ? "border-radius:50%;" : "border-radius:8px;");',
@@ -240,6 +262,9 @@ var PRELUDE = [
 '    get x(){ return sx; }, set x(v){ sx = __num(v, sx); place(); },',
 '    get y(){ return sy; }, set y(v){ sy = __num(v, sy); place(); },',
 '    set color(v){ if(d) d.style.background = v; },',
+'    animate_x: function(t, s){ __tween(e, "x", t, s); },',
+'    animate_y: function(t, s){ __tween(e, "y", t, s); },',
+'    animate_scale: function(t, s){ __tween(e, "sc", t, s); },',
 '    __sync: function(){ if(d && !e.dead) d.style.transform = "rotate(" + e.rot + "deg) scale(" + e.sc + ")"; } };',
 '  return e; }',
 'function Entity(o){ o = o || {};',
@@ -365,7 +390,7 @@ function run(code, answers){
   try{ js = transpile(code); }
   catch(e){ return {output: '', error: 'Could not read that: ' + e.message}; }
   var fn;
-  try{ fn = new Function(PRELUDE + '\nvar __answers = ' + JSON.stringify(answers || []) + ';\n' + js + '\n;return {updateFn: (typeof update === "function") ? update : null, out: __out.join("\\n")};'); }
+  try{ fn = new Function(PRELUDE + '\nvar __answers = ' + JSON.stringify(answers || []) + ';\n' + js + '\n;return {updateFn: (typeof update === "function") ? update : null, frameFn: (typeof __frame === "function") ? __frame : null, out: __out.join("\\n")};'); }
   catch(e){ return {output: pyOut(), error: withLine(e)}; }
   var res;
   try{ res = fn(); }
@@ -375,7 +400,7 @@ function run(code, answers){
   }
   // NOTE: no auto game-loop here. The caller owns updateFn (browser runner
   // restarts it per run so stale loops die; node just reads output).
-  return {output: res.out, error: '', update: res.updateFn};
+  return {output: res.out, error: '', update: res.updateFn, frame: res.frameFn};
 }
 
 // bundle(): the whole engine as one embeddable source string, so sandboxed
