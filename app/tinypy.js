@@ -250,7 +250,7 @@ var PRELUDE = [
 'function coin(x, y){ x = __num(x, 200); y = __num(y, 80); return __ent(__mk("gold", x, y, 24, true), x, y); }',
 'function image(nm, x, y, w, h){ var st = __stage(); var src = null;',
 '  try{ src = (typeof window !== "undefined" && window.__images) ? window.__images[nm] : null; }catch(e){ src = null; }',
-'  if(!st || !src) return __ent(null);',
+  '  if(!st || !src) return __ent(null, __num(x, 60), __num(y, 60));',
 '  var im = document.createElement("img"); im.src = src; im.alt = String(nm);',
 '  im.style.cssText = "position:absolute;left:" + __num(x, 60) + "px;top:" + __num(y, 60) + "px;" + ((w !== undefined) ? "width:" + __num(w, 40) + "px;" : "") + ((h !== undefined) ? "height:" + __num(h, 40) + "px;" : "max-width:120px;");',
 '  st.appendChild(im); return __ent(im, __num(x, 60), __num(y, 60)); }',
