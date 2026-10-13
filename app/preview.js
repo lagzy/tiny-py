@@ -19,14 +19,16 @@ var answers=[];
 var seq=0;
 function post(m){try{parent.postMessage(m,"*");}catch(e){}}
 function clearStage(){var st=document.getElementById("stage");if(st)st.innerHTML="";}
-function startLoop(up,fr,my){
+function startLoop(up,fr,my,hasUp){
 var last=null;
 function step(now){
 if(my!==seq)return;
 var dt=0.05;
-if(typeof now==="number"){ if(typeof last==="number"){ dt=(now-last)/1000; if(!(dt>0)||dt>0.25)dt=0.05; } last=now; }
-try{ if(fr)fr(dt); }catch(e){post({tiny:"error",message:"Error in motion: "+String((e&&e.message)||e)});return;}
+if(typeof now==="number"){ if(typeof last==="number"){ dt=(now-last)/1000; if(!(dt>0))dt=0.05; else if(dt>0.25)dt=0.25; } last=now; }
+var alive=0;
+try{ if(fr)alive=fr(dt)||0; }catch(e){post({tiny:"error",message:"Error in motion: "+String((e&&e.message)||e)});return;}
 try{up();}catch(e){post({tiny:"error",message:"Error in update: "+String((e&&e.message)||e)});return;}
+if(!hasUp&&!alive){post({tiny:"done"});return;}
 if(typeof requestAnimationFrame!=="undefined")requestAnimationFrame(step);
 }
 if(typeof requestAnimationFrame!=="undefined")requestAnimationFrame(step);
@@ -42,7 +44,7 @@ r=TinyPy.run(code,answers.slice());
 }catch(e){post({tiny:"error",message:String((e&&e.message)||e)});post({tiny:"done"});return;}
 if(r.needInput!==undefined&&r.needInput!==null){post({tiny:"need-input",prompt:r.needInput});return;}
 if(r.error)post({tiny:"error",message:r.error});
-if(r.update||r.frame)startLoop(r.update||function(){},r.frame||null,my);
+if(r.update||r.frame)startLoop(r.update||function(){},r.frame||null,my,!!r.update);
 else post({tiny:"done"});
 }
 window.addEventListener("message",function(ev){
@@ -68,11 +70,14 @@ body='<div id="stage"></div><script>window.__images='+imgs+'<\/script><script>'+
 const doc='<!DOCTYPE html><html><head><style>body{font-family:system-ui,sans-serif;padding:8px;margin:0}#stage{position:relative;min-height:280px}</style></head><body>'+body+'</body></html>';
 const f=document.getElementById('preview');if(f)f.srcdoc=doc;
 const kh=document.getElementById('keyhint');
-if(kh) kh.hidden = !/on_key\s*\(|on_click\s*\(/.test(code);
+if(kh){ kh.hidden = !/on_key\s*\(|on_click\s*\(/.test(code); kh.textContent = /on_key\s*\(/.test(code) ? 'click the stage first, then press space' : 'click the tomato in the stage'; }
 if(window.Csl)window.Csl.clear();},
 init(){
 let t;const ed=document.getElementById('editor');if(!ed)return;
-ed.addEventListener('input',()=>{clearTimeout(t);t=setTimeout(()=>{Preview.render();window.Assistant?.scan();window.Course?.afterRun();},300);});
+// Interactive programs wait for Run: auto-running them on every keystroke
+// would pop the console input box and steal focus mid-typing.
+const auto=()=>{const code=window.Editor?window.Editor.get():'';if(/input\s*\(/.test(code))return;Preview.render();window.Assistant?.scan();window.Course?.afterRun();};
+ed.addEventListener('input',()=>{clearTimeout(t);t=setTimeout(auto,300);});
 document.getElementById('btn-run')?.addEventListener('click',()=>{Preview.render();window.Assistant?.scan();window.Course?.afterRun();});
 Preview.render();}
 };
