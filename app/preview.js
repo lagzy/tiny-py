@@ -42,7 +42,7 @@ r=TinyPy.run(code,answers.slice());
 }catch(e){post({tiny:"error",message:String((e&&e.message)||e)});post({tiny:"done"});return;}
 if(r.needInput!==undefined&&r.needInput!==null){post({tiny:"need-input",prompt:r.needInput});return;}
 if(r.error)post({tiny:"error",message:r.error});
-if(r.update)startLoop(r.update,r.frame||null,my);
+if(r.update||r.frame)startLoop(r.update||function(){},r.frame||null,my);
 else post({tiny:"done"});
 }
 window.addEventListener("message",function(ev){
