@@ -19,9 +19,13 @@ var answers=[];
 var seq=0;
 function post(m){try{parent.postMessage(m,"*");}catch(e){}}
 function clearStage(){var st=document.getElementById("stage");if(st)st.innerHTML="";}
-function startLoop(up,my){
-function step(){
+function startLoop(up,fr,my){
+var last=null;
+function step(now){
 if(my!==seq)return;
+var dt=0.05;
+if(typeof now==="number"){ if(typeof last==="number"){ dt=(now-last)/1000; if(!(dt>0)||dt>0.25)dt=0.05; } last=now; }
+try{ if(fr)fr(dt); }catch(e){post({tiny:"error",message:"Error in motion: "+String((e&&e.message)||e)});return;}
 try{up();}catch(e){post({tiny:"error",message:"Error in update: "+String((e&&e.message)||e)});return;}
 if(typeof requestAnimationFrame!=="undefined")requestAnimationFrame(step);
 }
@@ -38,7 +42,7 @@ r=TinyPy.run(code,answers.slice());
 }catch(e){post({tiny:"error",message:String((e&&e.message)||e)});post({tiny:"done"});return;}
 if(r.needInput!==undefined&&r.needInput!==null){post({tiny:"need-input",prompt:r.needInput});return;}
 if(r.error)post({tiny:"error",message:r.error});
-if(r.update)startLoop(r.update,my);
+if(r.update)startLoop(r.update,r.frame||null,my);
 else post({tiny:"done"});
 }
 window.addEventListener("message",function(ev){
